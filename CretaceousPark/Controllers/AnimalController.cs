@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CretaceousPark.Models;
+using System.Reflection;
+
 
 namespace CretaceousPark.Controllers
 {
+  [Produces("application/json")]
   [Route("api/[controller]")]
   [ApiController]
   public class AnimalsController : ControllerBase
@@ -40,7 +43,7 @@ namespace CretaceousPark.Controllers
       return await query.ToListAsync();
     }
 
-            // GET: api/Animals/5
+    // GET: api/Animals/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Animal>> GetAnimal(int id)
     {
@@ -55,7 +58,29 @@ namespace CretaceousPark.Controllers
     }
 
     // POST api/animals
+    /// <summary>
+    /// Creates an Animal.
+    /// </summary>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST /Animal
+    ///     {
+    ///        "id": 1,
+    ///        "name": "Bart",
+    ///        "species": "arthropod",
+    ///        "age": 2,
+    ///        "gender": "male"
+    ///     }
+    ///
+    /// </remarks>
+    /// <param name="animal"></param>
+    /// <returns>A newly created Animal</returns>
+    /// <response code="201">Returns the newly created animal</response>
+    /// <response code="400">If the animal is null</response>   
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Animal>> Post(Animal animal)
     {
       _db.Animals.Add(animal);
@@ -89,6 +114,10 @@ namespace CretaceousPark.Controllers
       }
       return NoContent();
     }
+    /// <summary>
+    /// Deletes a specific Animal from API.
+    /// </summary>
+    /// <param name="id"></param>     
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAnimal(int id)
     {
